@@ -140,9 +140,9 @@ class Player(object):
             Make a move using a pseudo-pure Monte Carlo Tree Search
         '''
         opponent_id = 1 if self.id == 2 else 2
-        self.make_move(self.mcts(b, opponent_id, times_play), b, **kwargs)
+        self.make_move(self.mcts(b, opponent_id, times_play, mode = kwargs.get("mode")), b, **kwargs)
 
-    def mcts(self, b : AmazonsBoard, opponent_id : int, times_play : int) -> Move:
+    def mcts(self, b : AmazonsBoard, opponent_id : int, times_play : int, mode : Optional[str] = None) -> Move:
         '''
             Find the best move using a MCTS
         '''
@@ -154,7 +154,7 @@ class Player(object):
             # Make the move of all possible moves
             self.make_move(m, new_board, print_move = False)
             # Simulate the game "times_play" number of times
-            outcomes = [self.play_full_game_random(new_board, opponent_id) for _ in range(times_play)]
+            outcomes = [self.play_full_game(new_board, opponent_id, mode) for _ in range(times_play)]
             # Find the ones that win
             winning_outcomes = [x for x in outcomes if x[0] == True]
 
@@ -178,24 +178,29 @@ class Player(object):
             # Take a random move
             return random.choice(self.generate_all_moves(b))
 
-    def play_full_game_random(self, b : AmazonsBoard, opponent_id : int) -> Tuple[bool, int]:
+    def play_full_game(self, b : AmazonsBoard, opponent_id : int, mode : Optional[str] = None) -> Tuple[bool, int]:
         '''
-            Play a game out til a player wins taking random actions for each player
+            Play a game out til a player wins taking actions for each player
         '''
+        other_player = Player(opponent_id)
         # Only run random moves when the game isn't over
         while not b.done:
-            # Take a random move for the opponent
-            opponent_next_move = random.choice(b.populate_all_movements(opponent_id))
-            opponent_next_attack = random.choice(b.populate_all_attacks_for_move(*opponent_next_move))
-            b.make_move(Move(*opponent_next_move, opponent_next_attack, opponent_id))
+            match mode:
+                case None:
+                    other_player.make_random_move(b)
+                case "random":
+                    other_player.make_random_move(b)
+                case "min":
+                    other_player.make_min_opponent_move(b)
+                case _:
+                    raise Exception("Invalid type passed to play_full_game")
+
             if b.done:
-                return (b.winner == self.id, len(b.moves))
+                break
 
             # Take a random move for self
-            self_next_move = random.choice(b.populate_all_movements(self.id))
-            self_next_attack = random.choice(b.populate_all_attacks_for_move(*self_next_move))
-            b.make_move(Move(*self_next_move, self_next_attack, self.id))
+            self.make_random_move(b)
             if b.done:
-                return (b.winner == self.id, len(b.moves))
+                break
         # If the game was already over after taking the previous move, see if we won and how many moves it took
         return (b.winner == self.id, len(b.moves))

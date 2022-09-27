@@ -87,7 +87,7 @@ class AmazonsBoard(object):
         '''
         if self.done:
             raise GameOver(f"The game is currently over. Please reset the board to play again")
-        if kwargs.get("print_move", False) is not False:
+        if kwargs.get("print_move", False) not in [False, None]:
             print(m)
         self.check_move(m)
         self.apply_move(m)
