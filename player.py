@@ -127,9 +127,9 @@ class Player(object):
         return all_moves
 
     def prompt_human_move(self, b : AmazonsBoard, **kwargs) -> None:
-        piece = input("Which piece would you like to move? ")
-        location = input("Where would you like to move that piece to? ")
-        attack = input("Where would you like the piece to attack? ")
+        piece = input("Which piece would you like to move? Ex. 'x,y'")
+        location = input("Where would you like to move that piece to? Ex. 'x,y'")
+        attack = input("Where would you like the piece to attack? Ex. 'x,y'")
         piece = tuple([int(x) for x in piece.split(",")])
         location = tuple([int(x) for x in location.split(",")])
         attack = tuple([int(x) for x in attack.split(",")])
@@ -192,6 +192,10 @@ class Player(object):
                     other_player.make_random_move(b)
                 case "min":
                     other_player.make_min_opponent_move(b)
+                case "max":
+                    other_player.make_max_self_move(b)
+                case "minmax":
+                    other_player.make_minmax_move(b)
                 case _:
                     raise Exception("Invalid type passed to play_full_game")
 
@@ -203,4 +207,4 @@ class Player(object):
             if b.done:
                 break
         # If the game was already over after taking the previous move, see if we won and how many moves it took
-        return (b.winner == self.id, len(b.moves))
+        return b.winner == self.id, len(b.moves)

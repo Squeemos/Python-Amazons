@@ -10,6 +10,11 @@ def play_game(board_size, player_1, player_2, **kwargs):
     p = Player(1)
     q = Player(2)
 
+    print_board = kwargs.get("print_board", False)
+
+    if print_board is not False:
+        print(b, "\n")
+
     while not b.done:
         match player_1:
             case "Random":
@@ -27,7 +32,7 @@ def play_game(board_size, player_1, player_2, **kwargs):
             case other:
                 print(f"Some other case tried: {other}")
                 break
-        if kwargs.get("print_board", False) is not False:
+        if print_board is not False:
             print(b, "\n")
         if b.done:
             break
@@ -46,7 +51,7 @@ def play_game(board_size, player_1, player_2, **kwargs):
             case other:
                 print(f"Some other case tried: {other}")
                 break
-        if kwargs.get("print_board", False) is not False:
+        if print_board is not False:
             print(b, "\n")
         if b.done:
             break
@@ -58,25 +63,17 @@ def play_game(board_size, player_1, player_2, **kwargs):
 
 def main():
     size = 4
-    starting_positions = {
-        (0, 1) : 1,
-        (0, 3) : 1,
-        (4, 1) : 2,
-        (4, 3) : 2
-    }
-
-    other_starting_positions = {
-        (0, 0) : 1,
-        (size - 1, size -1) : 2
-    }
-
-    n_games = 100
+    n_games = 1
 
     games = [play_game(size,
-        player_1 = "Random",
+        player_1 = "MCTS",
         player_2 = "Min",
         print_move = False,
-        print_end = False)
+        print_end = True,
+        n_mcts_games = 100,
+        mcts_mode = "minmax",
+        print_board = True,
+        )
     for _ in range(n_games)]
 
     winners = {1 : 0, 2 : 0}
@@ -91,6 +88,7 @@ def main():
     print(winners)
     print(lengths)
 
+    return 0
 
 if __name__ == '__main__':
-    main()
+    SystemExit(main())

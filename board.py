@@ -25,7 +25,7 @@ class GameOver(Exception):
 #</editor-fold> Exceptions
 
 class AmazonsBoard(object):
-    def __init__(self, n : int = 8, **kwargs):
+    def __init__(self, n : int = 10, **kwargs):
         if n == 1:
             raise SizeError(f"Board cannot be of size 1")
         elif n == 2 and kwargs.get("starting_positions") is None:
@@ -276,7 +276,7 @@ class AmazonsBoard(object):
         for piece in zip(piece_locations[0], piece_locations[1]):
             for div_x, div_y in self.__dirs:
                 x, y = piece
-                x ,y = x + div_x, y + div_y
+                x, y = x + div_x, y + div_y
                 while x >= 0 and x < self.n and y >= 0 and y < self.n:
                     # Check if the piece can move there
                     if self.__board[x, y] == 0:
